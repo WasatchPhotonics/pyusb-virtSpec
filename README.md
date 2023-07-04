@@ -1,9 +1,10 @@
 # PyUSB-VirtSpec - WP Spectrometer Emulator
 
+<img width="743" alt="image" src="https://github.com/WasatchPhotonics/pyusb-virtSpec/assets/124081765/93182c73-d7ac-43ae-a2c8-0e69822e4a5e">
+
 ## Introduction
 
 This module substitutes PyUSB and provides a virtual spectrometer.
-<img width="743" alt="image" src="https://github.com/WasatchPhotonics/pyusb-virtSpec/assets/124081765/93182c73-d7ac-43ae-a2c8-0e69822e4a5e">
 
 ## Background
 
@@ -75,3 +76,9 @@ Other control messages can be implemented by copying `unhandled ctrl_t` messages
 ### Customizing Spectra
 
 Customizing spectra is very simple and minimal. You can either modify variables `peaks` and `noise` in wasatchConfig. Or you can fill `pixels` with arbitrary integer-only data. Take care that `len(pixels)` corresponds correctly with the device PID that you specified. By default the PID is `0x1000` and `len(pixels)` should be 1024.
+
+# Testing
+
+This section is brief guide about using pyusb-virtSpec in testing. The motivation of this module is to reduce spectrometer dependence for high-level tests that don't depend on any meaningful spectra. For instance saving and loading measurements, running plugins, and confirming the graph still shows. This virtual spectrometer enables parts of Enlighten that are normally unavailable when no spec is connected.
+
+Characterizing real spectrometer outcomes using virtual test results should only be attempted with a strong understanding of this software and WP drivers, but sometimes it's obvious. If the virtual spec suddenly breaks after a code change, you've must likely done something to break compatibility with a real spec as well.
