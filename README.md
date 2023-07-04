@@ -16,6 +16,8 @@ Have pyusb-virtSpec in the same folder as Enlighten, Wasatch.PY, or any other Py
 
 Replace 'export PYTHONPATH...' with the correct way to set environment variables in your OS.
 
+Optional: Create/activate a conda environment first.
+
 ```
 pip uninstall pyusb
 export PYTHONPATH=../pyusb-virtSpec;$PYTHONPATH
