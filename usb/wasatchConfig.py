@@ -55,7 +55,11 @@ class VirtualDevice(Ignore):
 
         # REQUEST FPGA COMPILATION OPTIONS
         if dev_handle == 0xc0 and bmRequestType == 0xff and bRequest == 0x4 and wIndex == 0x40:
-            return [0xFFFF, 0xFF]
+            return [0xFF, 0xFF]
+
+        # REQUEST LINE LENGTH (pid=0x1000)
+        if dev_handle == 0xc0 and bmRequestType == 0xff and bRequest == 0x3 and wValue == 0x0 and wIndex == 0x40 and self.idProduct == 0x1000:
+            return [0x00, 0x04]
 
         # log unhandled ctrl messages 
         def display(k):
@@ -70,7 +74,7 @@ class VirtualDevice(Ignore):
     def read(self, endpoint, msgLen, timeout):
         " Lets just spit out a spectrum ! (tho this could be EEPROM, i think, depending on last ctrl_t) "
 
-        if msgLen == 2048:
+        if msgLen in [1024, 2048]:
 
             # very simple simulated spectra
             # just to output anything on graph !
