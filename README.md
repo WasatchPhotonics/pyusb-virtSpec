@@ -1,4 +1,4 @@
-# PyUSB-VirtSpec - Wasatch Photonics Spectrometer Emulator for Python
+# PyUSB-VirtSpec - WP Spectrometer Emulator
 
 ## Introduction
 
@@ -45,7 +45,7 @@ Firstly, upon import the following message is displayed.
 ***** USING VIRTUAL PYUSB BACKEND *****
 ```
 
-This is to help verify the local environment is configured to use this module instead of the original PyUSB.
+This shows the local environment is configured to use this module instead of the original PyUSB.
 
 Next, `usb.core.find` has been modified to return only the contents of the list `CONNECTED_DEVICES`. This variable is where all virtual devices are specified--it is defined elsewhere, making it rarely necessary to modify `core.py` in the future. One reason to modify `core.py` would be to enable a mixture of real and virtual devices. Currently only virtual devices will be returned by `find`.
 
