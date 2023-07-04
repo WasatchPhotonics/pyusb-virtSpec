@@ -31,7 +31,7 @@ Control Line State Field (2 bytes, control endpoint)
     bit 0 = 1  DTR : assert    (positive voltage)
 
 This tool can be 'compiled' into a windows binary using the following commands
-    >>> from setuptools import setup
+    >>> from distutils.core import setup
     >>> import py2exe
     >>> setup(console=['vcp_terminal.py'])
 """

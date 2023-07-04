@@ -1,10 +1,8 @@
-*.egg-info
 *.pyc
-.tox
+build
 ChangeLog
 MANIFEST
+dist
+.tox
+*.egg-info
 usb/_version.py
-
-build/
-dist/
-venv/

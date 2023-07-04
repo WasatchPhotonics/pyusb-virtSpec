@@ -31,6 +31,12 @@
 
 import sys
 from setuptools import setup
+from distutils.version import LooseVersion
+from setuptools import __version__ as setuptools_version
+
+setuptools_scm = 'setuptools_scm'
+if LooseVersion(setuptools_version).version[0] < 12:
+    setuptools_scm += '<2.0'
 
 
 def pyusb_scm_version():
@@ -39,8 +45,8 @@ def pyusb_scm_version():
 
     def editable_local_scheme(version):
         local_scheme = get_local_node_and_date(version)
-        # setuptools scans sys.argv for matching command classes
-        # (see `setuptools._distutils.dist.Distribution._parse_command_opts`)
+        # distutils scans sys.argv for matching command classes
+        # (see `distutils.dist.Distribution._parse_command_opts`)
         if "develop" in sys.argv[1:]:
             return local_scheme + "-editable"
         return local_scheme
@@ -61,22 +67,17 @@ pyusb_scm_version.pop = lambda *_: None
 setup(
     name='pyusb',
     use_scm_version=pyusb_scm_version,
-    setup_requires='setuptools_scm',
-    description='Easy USB access for Python',
+    setup_requires=setuptools_scm,
+    description='Python USB access module',
     author='Jonas Malaco',
     author_email='me@jonasmalaco.com',
     url='https://pyusb.github.io/pyusb',
-    project_urls={
-        'docs/Tutorial': 'https://github.com/pyusb/pyusb/blob/master/docs/tutorial.rst',
-        'docs/FAQ': 'https://github.com/pyusb/pyusb/blob/master/docs/faq.rst',
-        'Source': 'https://github.com/pyusb/pyusb',
-    },
     packages=['usb', 'usb.backend'],
     long_description=
 """
 PyUSB offers easy USB devices communication in Python.
 It should work without additional code in any environment with
-Python >= 3.7, ctypes and a pre-built USB backend library
+Python >= 3.6, ctypes and a pre-built USB backend library
 (currently: libusb 1.x, libusb 0.1.x or OpenUSB).
 """,
     classifiers=[
@@ -99,10 +100,10 @@ Python >= 3.7, ctypes and a pre-built USB backend library
         'Operating System :: POSIX :: BSD :: OpenBSD',
         'Operating System :: POSIX :: Linux',
         'Operating System :: POSIX :: SunOS/Solaris',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: 3.10',
         # source(CPython,Jython,IronPython,PyPy): "The Long Term" section of
         # http://ojs.pythonpapers.org/index.php/tpp/article/viewFile/23/23
         'Programming Language :: Python :: Implementation :: CPython',
@@ -115,6 +116,6 @@ Python >= 3.7, ctypes and a pre-built USB backend library
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: System :: Hardware :: Hardware Drivers'
     ],
-    python_requires='>=3.7.0'
+    python_requires='>=3.6.0'
 )
 

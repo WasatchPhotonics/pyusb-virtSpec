@@ -19,7 +19,7 @@ Platform neutrality:
     libusb 1.0, libusb 0.1 and OpenUSB.  You can write your own backend if you
     desire to.
 Portability:
-    PyUSB should run on any platform with Python >= 3.7, ctypes_ and at least
+    PyUSB should run on any platform with Python >= 3.6, ctypes_ and at least
     one of the supported builtin backends.
 Easiness:
     Communicating with an USB_ device has never been so easy! USB is a complex
@@ -170,7 +170,10 @@ Hey, wait, what if I want to enumerate all printers present? No problem:
 
     # this is not the whole history yet...
     printers = usb.core.find(find_all=True, bDeviceClass=7)
-    print(f'There are {len(printers)} in the system')
+
+    # Python 2, Python 3, to be or not to be
+    import sys
+    sys.stdout.write('There are ' + len(printers) + ' in the system\n.')
 
 What happened? Well, it is time for a little explanation... ``find`` has a
 parameter called ``find_all`` that defaults to False. When it is false [#]_,
@@ -594,9 +597,6 @@ usb`` to get my application working?", you ask. The answer is yes, it will
 work, but you don't have to. If you run your application untouched it will just
 work, because the ``import usb`` statement will import all public symbols from
 ``usb.legacy``. If you face a problem, probably you found a bug.
-
-Footnotes
----------
 
 .. [#] When I say True or False (capitalized), I mean the respective values of
        the Python language. And when I say true and false, I mean any

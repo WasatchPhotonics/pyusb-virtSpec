@@ -121,8 +121,7 @@ class _ResourceManager(object):
         self._active_cfg_index = None
         self.dev = dev
         self.handle = None
-        self._claimed_intf = set()
-        self._intf_setting = {}
+        self._claimed_intf = _interop._set()
         self._ep_info = {}
         self.lock = threading.RLock()
 
@@ -164,7 +163,6 @@ class _ResourceManager(object):
         # which tracks the Configuration, which tracks the Device)
         self._active_cfg_index = cfg.index
 
-        self._intf_setting.clear()
         self._ep_info.clear()
 
     @synchronized
@@ -218,9 +216,6 @@ class _ResourceManager(object):
 
         self.backend.set_interface_altsetting(self.handle, i.bInterfaceNumber, alt)
 
-        self._intf_setting[i.bInterfaceNumber] = alt
-        self._ep_info.clear()
-
     @synchronized
     def setup_request(self, device, endpoint):
         # we need the endpoint address, but the "endpoint" parameter
@@ -241,8 +236,6 @@ class _ResourceManager(object):
             return self._ep_info[endpoint_address]
         except KeyError:
             for intf in self.get_active_configuration(device):
-                if intf.bAlternateSetting != self._intf_setting.get(intf.bInterfaceNumber, 0):
-                    continue
                 ep = util.find_descriptor(intf, bEndpointAddress=endpoint_address)
                 if ep is not None:
                     self._ep_info[endpoint_address] = (intf, ep)
@@ -280,7 +273,6 @@ class _ResourceManager(object):
         self.release_all_interfaces(device)
         if close_handle:
             self.managed_close()
-        self._intf_setting.clear()
         self._ep_info.clear()
         self._active_cfg_index = None
 
@@ -669,18 +661,11 @@ class Configuration(object):
         """
         return Interface(self.device, index[0], index[1], self.index)
 
-    def _get_power_multiplier(self):
-        if self.device.speed is not None:
-            power_multiplier = _lu.MAX_POWER_UNITS_USB_SUPERSPEED if self.device.speed >= 4 else _lu.MAX_POWER_UNITS_USB2p0
-        else:
-            power_multiplier = _lu.MAX_POWER_UNITS_USB_SUPERSPEED if self.device.bcdUSB >= 0x0300 else _lu.MAX_POWER_UNITS_USB2p0
-
-        return power_multiplier
 
     def _str(self):
         return "CONFIGURATION %d: %d mA" % (
             self.bConfigurationValue,
-            self._get_power_multiplier() * self.bMaxPower)
+            _lu.MAX_POWER_UNITS_USB2p0 * self.bMaxPower)
 
     def _get_full_descriptor_str(self):
         headstr = "  " + self._str() + " "
@@ -715,7 +700,8 @@ class Configuration(object):
             ) + \
         "   %-21s:%#7x (%d mA)" % (
             "bMaxPower", self.bMaxPower,
-            self._get_power_multiplier() * self.bMaxPower)
+            _lu.MAX_POWER_UNITS_USB2p0 * self.bMaxPower)
+            # FIXME : add a check for superspeed vs usb 2.0
 
 class Device(_objfinalizer.AutoFinalizedObject):
     r"""Device object.
@@ -749,7 +735,7 @@ class Device(_objfinalizer.AutoFinalizedObject):
     value for most devices) and then writes some data to the endpoint 0x01.
 
     Timeout values for the write, read and ctrl_transfer methods are specified
-    in milliseconds. If the parameter is omitted, Device.default_timeout value
+    in miliseconds. If the parameter is omitted, Device.default_timeout value
     will be used instead. This property can be set by the user at anytime.
     """
 
@@ -985,7 +971,7 @@ class Device(_objfinalizer.AutoFinalizedObject):
         The data parameter should be a sequence like type convertible to
         the array type (see array module).
 
-        The timeout is specified in milliseconds.
+        The timeout is specified in miliseconds.
 
         The method returns the number of bytes written.
         """
@@ -1017,7 +1003,7 @@ class Device(_objfinalizer.AutoFinalizedObject):
         tells how many bytes you want to read or supplies the buffer to
         receive the data (it *must* be an object of the type array).
 
-        The timeout is specified in milliseconds.
+        The timeout is specified in miliseconds.
 
         If the size_or_buffer parameter is the number of bytes to read, the
         method returns an array object with the data read. If the
@@ -1158,8 +1144,7 @@ class Device(_objfinalizer.AutoFinalizedObject):
         return Configuration(self, index)
 
     def _finalize_object(self):
-        if hasattr(self, '_ctx'):
-            self._ctx.dispose(self)
+        self._ctx.dispose(self)
 
     def __get_timeout(self, timeout):
         if timeout is not None:
@@ -1307,7 +1292,7 @@ def find(find_all=False, backend = None, custom_match = None, **args):
         for dev in backend.enumerate_devices():
             d = Device(dev, backend)
             tests = (val == _try_getattr(d, key) for key, val in kwargs.items())
-            if all(tests) and (custom_match is None or custom_match(d)):
+            if _interop._all(tests) and (custom_match is None or custom_match(d)):
                 yield d
 
     if backend is None:
@@ -1327,7 +1312,7 @@ def find(find_all=False, backend = None, custom_match = None, **args):
         return device_iter(**args)
     else:
         try:
-            return next(device_iter(**args))
+            return _interop._next(device_iter(**args))
         except StopIteration:
             return None
 
