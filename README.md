@@ -1,8 +1,9 @@
-# PyUSB-VirtSpec - Wasatch Photonics Spectrometer Emulator for Python
+# PyUSB-VirtSpec - WP Spectrometer Emulator
 
 ## Introduction
 
 This module substitutes PyUSB and provides a virtual spectrometer.
+<img width="743" alt="image" src="https://github.com/WasatchPhotonics/pyusb-virtSpec/assets/124081765/93182c73-d7ac-43ae-a2c8-0e69822e4a5e">
 
 ## Background
 
@@ -15,6 +16,8 @@ See the Readme for [PyUSB v1.2.1](https://github.com/WasatchPhotonics/pyusb-virt
 Have pyusb-virtSpec in the same folder as Enlighten, Wasatch.PY, or any other Python software.
 
 Replace 'export PYTHONPATH...' with the correct way to set environment variables in your OS.
+
+Optional: Create/activate a conda environment first.
 
 ```
 pip uninstall pyusb
@@ -45,13 +48,13 @@ Firstly, upon import the following message is displayed.
 ***** USING VIRTUAL PYUSB BACKEND *****
 ```
 
-This is to help verify the local environment is configured to use this module instead of the original PyUSB.
+This shows the local environment is configured to use this module instead of the original PyUSB.
 
 Next, `usb.core.find` has been modified to return only the contents of the list `CONNECTED_DEVICES`. This variable is where all virtual devices are specified--it is defined elsewhere, making it rarely necessary to modify `core.py` in the future. One reason to modify `core.py` would be to enable a mixture of real and virtual devices. Currently only virtual devices will be returned by `find`.
 
 ### Specifying Devices
 
-The main place for configuration and extension is `usb/wasatchConfig.py`. This code is kind of messy, but the gist of it is as follows. There is a class called `VirtualDevice` which acts as a stand in for a libusb0 backend Device. It inherits from a smaller helper class called `Ignore` because we tend to want to ignore extra messages that are meant for device state configuration. The list `CONNECTED_DEVICES` should be populated with one instance of VirtualDevice per virtual spectrometer. 
+The main place for configuration and extension is `usb/wasatchConfig.py`. This code is kind of messy, but the gist of it is as follows. There is a class called `VirtualDevice` which acts as a stand in for a libusb0 backend Device. It inherits from a smaller helper class called `Ignore` because we tend to want to ignore extra messages that are meant for device state configuration. The list `CONNECTED_DEVICES` should be populated with one instance of VirtualDevice per virtual spectrometer.
 
 ### Device Meta-Data
 
@@ -60,6 +63,8 @@ Data such as `.serial_number` and `.product` can be modified directly. VirtualDe
 FPGA Options are explained in WasatchPhotonics/Wasatch.PY:wasatch/FPGAOptions.py:38. By default VirtualDevice responds with all ones. 
 
 The EEPROM can be specified by modifying the default parameters of `__init__` of `EEPROM` in `eeprom_gen.py`. This file is a self-contained copy of EEPROM.py from WasatchPhotonics/Wasatch.PY. It is used only for its initializer, `.generate_write_buffers()`, and the list `.write_buffers`.
+
+For simplicity, wavecal is left blank, so you must use `X-AXIS=pixel` within Enlighten to see a sensible spectra.
 
 ### Supporting Additional Control Messages
 
