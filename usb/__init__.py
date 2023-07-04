@@ -28,6 +28,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+print("***** USING VIRTUAL PYUSB BACKEND *****")
+
 r"""PyUSB - Easy USB access in Python
 
 This package exports the following modules and subpackages:

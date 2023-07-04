@@ -56,6 +56,8 @@ import array
 import threading
 import functools
 
+from .wasatchConfig import CONNECTED_DEVICES
+
 _logger = logging.getLogger('usb.core')
 
 _DEFAULT_TIMEOUT = 1000
@@ -1221,92 +1223,29 @@ class Device(_objfinalizer.AutoFinalizedObject):
 
 
 def find(find_all=False, backend = None, custom_match = None, **args):
-    r"""Find an USB device and return it.
+    # This function has been modified to list the connected devices
+    # specified in wasatchConfig.py
 
-    find() is the function used to discover USB devices.  You can pass as
-    arguments any combination of the USB Device Descriptor fields to match a
-    device. For example:
+    # See the live device version at pyusb/pyusb:v1.2.1
 
-    find(idVendor=0x3f4, idProduct=0x2009)
-
-    will return the Device object for the device with idVendor field equals
-    to 0x3f4 and idProduct equals to 0x2009.
-
-    If there is more than one device which matchs the criteria, the first one
-    found will be returned. If a matching device cannot be found the function
-    returns None. If you want to get all devices, you can set the parameter
-    find_all to True, then find will return an iterator with all matched devices.
-    If no matching device is found, it will return an empty iterator. Example:
-
-    for printer in find(find_all=True, bDeviceClass=7):
-        print (printer)
-
-    This call will get all the USB printers connected to the system.  (actually
-    may be not, because some devices put their class information in the
-    Interface Descriptor).
-
-    You can also use a customized match criteria:
-
-    dev = find(custom_match = lambda d: d.idProduct=0x3f4 and d.idvendor=0x2009)
-
-    A more accurate printer finder using a customized match would be like
-    so:
-
-    def is_printer(dev):
-        import usb.util
-        if dev.bDeviceClass == 7:
-            return True
-        for cfg in dev:
-            if usb.util.find_descriptor(cfg, bInterfaceClass=7) is not None:
-                return True
-
-    for printer in find(find_all=True, custom_match = is_printer):
-        print (printer)
-
-    Now even if the device class code is in the interface descriptor the
-    printer will be found.
-
-    You can combine a customized match with device descriptor fields. In this
-    case, the fields must match and the custom_match must return True. In the
-    our previous example, if we would like to get all printers belonging to the
-    manufacturer 0x3f4, the code would be like so:
-
-    printers = list(find(find_all=True, idVendor=0x3f4, custom_match=is_printer))
-
-    If you want to use find as a 'list all devices' function, just call
-    it with find_all = True:
-
-    devices = list(find(find_all=True))
-
-    Finally, you can pass a custom backend to the find function:
-
-    find(backend = MyBackend())
-
-    PyUSB has builtin backends for libusb 0.1, libusb 1.0 and OpenUSB.  If you
-    do not supply a backend explicitly, find() function will select one of the
-    predefineds backends according to system availability.
-
-    Backends are explained in the usb.backend module.
-    """
     def device_iter(**kwargs):
-        for dev in backend.enumerate_devices():
-            d = Device(dev, backend)
+        for d in CONNECTED_DEVICES:
             tests = (val == _try_getattr(d, key) for key, val in kwargs.items())
             if _interop._all(tests) and (custom_match is None or custom_match(d)):
                 yield d
 
-    if backend is None:
-        import usb.backend.libusb1 as libusb1
-        import usb.backend.libusb0 as libusb0
-        import usb.backend.openusb as openusb
+    # if backend is None:
+    #     import usb.backend.libusb1 as libusb1
+    #     import usb.backend.libusb0 as libusb0
+    #     import usb.backend.openusb as openusb
 
-        for m in (libusb1, openusb, libusb0):
-            backend = m.get_backend()
-            if backend is not None:
-                _logger.info('find(): using backend "%s"', m.__name__)
-                break
-        else:
-            raise NoBackendError('No backend available')
+    #     for m in (libusb1, openusb, libusb0):
+    #         backend = m.get_backend()
+    #         if backend is not None:
+    #             _logger.info('find(): using backend "%s"', m.__name__)
+    #             break
+    #     else:
+    #         raise NoBackendError('No backend available')
 
     if find_all:
         return device_iter(**args)
