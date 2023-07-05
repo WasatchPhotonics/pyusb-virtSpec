@@ -5,8 +5,6 @@ NOOP = lambda *k, **kw: None
 
 # Using this to create a plausible response to EEPROM request
 from .eeprom_gen import EEPROM
-eeprom = EEPROM()
-eeprom.generate_write_buffers()
 
 # show some fake noise in get_line's
 from random import random
@@ -38,18 +36,25 @@ class VirtualDevice(Ignore):
 
     _eeprom_page = 0
 
-    def __init__(self):
+    def __init__(self, custom_eeprom=None):
         # populating some fields for Wasatch.PY
         self.dev = self
         self.idproduct = self.idProduct
         self.idvendor = self.idVendor
+
+        if custom_eeprom:
+            self.eeprom = custom_eeprom
+        else:
+            self.eeprom = EEPROM()
+
+        self.eeprom.generate_write_buffers()
 
     def ctrl_transfer(self, dev_handle, bmRequestType, bRequest, wValue=0, wIndex=0, data_or_wLength = None, timeout = None):
         """ Here we pretend to be the device firmware """
 
         # REQUEST EEPROM
         if dev_handle == 0xc0 and bmRequestType == 0xff and bRequest == 0x1 and wIndex == 0x40:
-            buf = eeprom.write_buffers[self._eeprom_page]
+            buf = self.eeprom.write_buffers[self._eeprom_page]
             self._eeprom_page += 1
             return buf
 
@@ -98,4 +103,13 @@ class VirtualDevice(Ignore):
     _ctx = Ctx()
 
 
-CONNECTED_DEVICES = [VirtualDevice()]
+FX2 = VirtualDevice()
+
+eeprom_xs = EEPROM()
+eeprom_xs.model = 'Test XS'
+XS = VirtualDevice(eeprom_xs)
+XS.pid = 0x4000
+XS.has_battery = True
+XS.has_laser = True
+
+CONNECTED_DEVICES = [XS]

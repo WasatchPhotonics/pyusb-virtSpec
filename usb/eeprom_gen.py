@@ -54,7 +54,7 @@ class EEPROM(object):
         self.laser_watchdog_sec          = 0
         self.light_source_type           = 0
                                          
-        self.wavelength_coeffs           = []
+        self.wavelength_coeffs           = [100, .5, 0, 0]
         self.degC_to_dac_coeffs          = []
         self.adc_to_degC_coeffs          = []
         self.max_temp_degC               = 20 
