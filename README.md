@@ -79,6 +79,8 @@ Other control messages can be implemented by copying `unhandled ctrl_t` messages
 
 Customizing spectra is very simple and minimal. You can either modify variables `peaks` and `noise` in wasatchConfig. Or you can fill `pixels` with arbitrary integer-only data. Take care that `len(pixels)` corresponds correctly with the device PID that you specified. By default the PID is `0x1000` and `len(pixels)` should be 1024.
 
+There is a known problem when setting peak heights in the ballpark of 40k-60k counts. For some reason the simulated spectra gains visible jagged artifacts at this scale. The exact same generation function scaled down to ~2-5k counts removed the artifacts for me.
+
 # Testing
 
 This section is brief guide about using pyusb-virtSpec in testing. The motivation of this module is to reduce spectrometer dependence for high-level tests that don't depend on any meaningful spectra. For instance saving and loading measurements, running plugins, and confirming the graph still shows. This virtual spectrometer enables parts of Enlighten that are normally unavailable when no spec is connected.
