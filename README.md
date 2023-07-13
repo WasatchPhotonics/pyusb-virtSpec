@@ -65,7 +65,9 @@ FPGA Options are explained in WasatchPhotonics/Wasatch.PY:wasatch/FPGAOptions.py
 
 The EEPROM can be specified by modifying the default parameters of `__init__` of `EEPROM` in `eeprom_gen.py`. This file is a self-contained copy of EEPROM.py from WasatchPhotonics/Wasatch.PY. It is used only for its initializer, `.generate_write_buffers()`, and the list `.write_buffers`.
 
-For simplicity, wavecal is left blank, so you must use `X-AXIS=pixel` within Enlighten to see a sensible spectra.
+~For simplicity, wavecal is left blank, so you must use `X-AXIS=pixel` within Enlighten to see a sensible spectra.~
+
+Wavecal is now set to map [0,1024) pixels to [800, 1000) wavelengths. Linear mappings such as this are trivial to generate manually: `[start_wavelength, (end_wavelength-start_wavelength)/1024, 0, 0]`
 
 ### Supporting Additional Control Messages
 
