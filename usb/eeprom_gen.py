@@ -40,8 +40,8 @@ class EEPROM(object):
         self.sig_laser_tec               = False
         self.has_interlock_feedback      = False
         self.has_shutter                 = False
-        self.excitation_nm               = 1.0
-        self.excitation_nm_float         = 1.0
+        self.excitation_nm               = 750.0 # needs to be in range (200, 2500) or Enlighten will reject and set to zero
+        self.excitation_nm_float         = 750.0
         self.slit_size_um                = 0
         self.startup_integration_time_ms = 10
         self.startup_temp_degC           = 15
