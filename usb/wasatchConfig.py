@@ -8,6 +8,20 @@ from .eeprom_gen import EEPROM
 
 # show some fake noise in get_line's
 from random import random
+import os
+
+# get spectra from CSV
+spectrum = []
+with open(os.path.dirname(__file__) + os.sep + "target.csv", "rt") as target:
+    
+    # skip header
+    L = target.readline()
+    
+    L = target.readline()
+    while L:
+        Pixel,Wavenumber,Processed,Raw,Dark = L.split(",")
+        spectrum.append(float(Processed))
+        L = target.readline()
 
 class Ignore:
     def __getattr__(self, a):
@@ -77,7 +91,8 @@ class VirtualDevice(Ignore):
         print("unhandled ctrl_t:", 'dev_handle ==', display(dev_handle), 'and bmRequestType ==', display(bmRequestType), 'and bRequest ==', display(bRequest), 'and wValue ==', display(wValue), 'and wIndex ==', display(wIndex), 'and data_or_wLength ==', display(data_or_wLength), 'and timeout ==',timeout)
 
     def read(self, endpoint, msgLen, timeout):
-        " Lets just spit out a spectrum ! (tho this could be EEPROM, i think, depending on last ctrl_t) "
+        """ Lets just spit out a spectrum ! (tho this could be EEPROM, i think, depending on last ctrl_t)
+        No EEPROM is not from bulk read"""
 
         if msgLen in [1024, 2048]:
 
@@ -88,8 +103,8 @@ class VirtualDevice(Ignore):
             peaks = [(500,5000), (700, 3000), (200, 10000)]
             noise = 100
 
-            # funky one-liner for spectra gen, sorry. Trying to wrap this up and move on 
-            pixels = [int(sum([p[1]/(1+(x-p[0])**2) for p in peaks])+noise*random()) for x in range(1024)]
+            # using spectra from target.csv
+            pixels = [0 for i in range(300)]+[int(spectrum[x]+noise*random()) for x in range(1952-300)]
             lsb = [x&0xFFFF for x in pixels]
             msb = [(x>>16)&0x00FF for x in pixels]
 

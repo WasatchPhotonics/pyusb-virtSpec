@@ -54,7 +54,7 @@ class EEPROM(object):
         self.laser_watchdog_sec          = 0
         self.light_source_type           = 0
                                          
-        self.wavelength_coeffs           = [100, .5, 0, 0]
+        self.wavelength_coeffs           = [-4.08286471e+02, 1, 0, 0]#, 2.88347054e+00, -1.06786353e-03, 2.60766647e-07]
         self.degC_to_dac_coeffs          = []
         self.adc_to_degC_coeffs          = []
         self.max_temp_degC               = 20 
@@ -66,14 +66,14 @@ class EEPROM(object):
                                          
         self.detector                    = None
         self.detector_serial_number      = None
-        self.active_pixels_horizontal    = 1024
+        self.active_pixels_horizontal    = 1952
         self.active_pixels_vertical      = 0
         self.min_integration_time_ms     = 10
         self.max_integration_time_ms     = 60000
         self.actual_horizontal           = 0
         self.actual_vertical             = 0     # not a real EEPROM field, though it should be
-        self.roi_horizontal_start        = 0
-        self.roi_horizontal_end          = 0
+        self.roi_horizontal_start        = 300
+        self.roi_horizontal_end          = 1951
         self.roi_vertical_region_1_start = 0
         self.roi_vertical_region_1_end   = 0
         self.roi_vertical_region_2_start = 0
