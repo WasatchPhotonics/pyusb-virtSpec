@@ -12,6 +12,16 @@ See the Readme for [PyUSB v1.2.1](https://github.com/WasatchPhotonics/pyusb-virt
 
 ## Usage
 
+### Enlighten
+
+There is a shortcut for using pyusb-virtspec with Enlighten. Simply call the following from your shell.
+
+```
+scripts\bootstrap.bat activate virtspec
+```
+
+This can simplify testing of UI and plugins. Do not distribute Enlighten with virtspec. Always test with a real spectrometer before releasing.
+
 ### Local
 
 Have pyusb-virtSpec in the same folder as Enlighten, Wasatch.PY, or any other Python software.
