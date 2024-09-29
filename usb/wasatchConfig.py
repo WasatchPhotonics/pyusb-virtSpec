@@ -66,6 +66,14 @@ class VirtualDevice(Ignore):
         if dev_handle == 0xc0 and bmRequestType == 0xff and bRequest == 0x3 and wValue == 0x0 and wIndex == 0x40 and self.idProduct == 0x1000:
             return [0x00, 0x04]
 
+        # REQUEST REVISION CODE
+        if dev_handle == 0xc0 and bmRequestType == 0xc0 and bRequest == 0x0 and wValue == 0x0 and wIndex == 0x40:
+            return [0x00, 0x00]
+
+        # REQUEST FPGA REVISION
+        if dev_handle == 0xc0 and bmRequestType == 0xb4 and bRequest == 0x0 and wValue == 0x0 and wIndex == 0x07:
+            return [0x00, 0x00]
+
         # log unhandled ctrl messages 
         def display(k):
             if type(k) == int:
